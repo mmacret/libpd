@@ -129,9 +129,8 @@ def libpd_load_string(patch):
   ptr = __libpd_loadstring(patch)
   if not ptr:
     raise IOError("unable to open patch with string")
-  dz = __libpd_getdollarzero(ptr)
-  __libpd_patches[dz] = ptr
-  return dz
+  __libpd_patches[0] = ptr
+  return 1
 
 def libpd_close_patch(dz):
   __libpd_closefile(__libpd_patches[dz])
