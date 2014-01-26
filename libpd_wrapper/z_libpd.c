@@ -340,6 +340,10 @@ void *libpd_openfile(const char *basename, const char *dirname) {
   return (void *)glob_evalfile(NULL, gensym(basename), gensym(dirname));
 }
 
+void *libpd_loadstring(const char *patch) {
+  return (void *)glob_evalstring(NULL, patch);
+}
+
 void libpd_closefile(void *x) {
   pd_free((t_pd *)x);
 }

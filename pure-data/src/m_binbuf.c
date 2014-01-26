@@ -597,8 +597,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
         t_pd *nexttarget;
             /* get a target. */
         while (!target)
-        {
-            t_symbol *s;
+        {   t_symbol *s;
             while (ac && (at->a_type == A_SEMI || at->a_type == A_COMMA))
                 ac--,  at++;
             if (!ac) break;
@@ -648,7 +647,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
         nargs = 0;
         nexttarget = target;
         while (1)
-        {
+        {   
             t_symbol *s9;
             if (!ac) goto gotmess;
             switch (at->a_type)
@@ -712,6 +711,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
             ac--;
             at++;
             nargs++;
+            
         }
     gotmess:
         if (nargs)
@@ -719,19 +719,25 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
             switch (mstack->a_type)
             {
             case A_SYMBOL:
+                
                 typedmess(target, mstack->a_w.w_symbol, nargs-1, mstack+1);
+               
                 break;
             case A_FLOAT:
+                
+
                 if (nargs == 1) pd_float(target, mstack->a_w.w_float);
                 else pd_list(target, 0, nargs, mstack);
                 break;
             }
         }
         msp = mstack;
+        
         if (!ac) break;
         target = nexttarget;
         at++;
         ac--;
+        
     }
 broken: 
     if (maxnargs > SMALLMSG)
@@ -799,7 +805,6 @@ int binbuf_read(t_binbuf *b, char *filename, char *dirname, int crflag)
                 buf[i] = ';';
     }
     binbuf_text(b, buf, length);
-
 #if 0
     startpost("binbuf_read "); postatom(b->b_n, b->b_vec); endpost();
 #endif
@@ -1484,6 +1489,19 @@ void binbuf_evalfile(t_symbol *name, t_symbol *dir)
     canvas_resume_dsp(dspstate);
 }
 
+void binbuf_evalstring(char *patch)
+{
+    t_binbuf *b = binbuf_new();
+    
+    int dspstate = canvas_suspend_dsp();
+    glob_setfilename(0, gensym(""), gensym("."));
+    binbuf_text(b, patch, (long)strlen(patch));
+    binbuf_eval(b, 0, 0, 0);
+    glob_setfilename(0, &s_, &s_);
+    binbuf_free(b);
+    canvas_resume_dsp(dspstate);
+}
+
 t_pd *glob_evalfile(t_pd *ignore, t_symbol *name, t_symbol *dir)
 {
     t_pd *x = 0;
@@ -1503,3 +1521,20 @@ t_pd *glob_evalfile(t_pd *ignore, t_symbol *name, t_symbol *dir)
     canvas_resume_dsp(dspstate);
     return x;
 }
+
+t_pd *glob_evalstring(t_pd *ignore, char *patch)
+{
+    t_pd *x = 0;
+    int dspstate = canvas_suspend_dsp();
+    binbuf_evalstring(patch);
+    while ((x != s__X.s_thing) && s__X.s_thing) 
+    {
+        x = s__X.s_thing;
+        vmess(x, gensym("pop"), "i", 1);
+    }
+    pd_doloadbang();
+    canvas_resume_dsp(dspstate);
+    return x;
+}
+
+    

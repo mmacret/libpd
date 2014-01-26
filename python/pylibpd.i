@@ -58,9 +58,11 @@ void *libpd_bind(const char *sym);
 void libpd_unbind(void *p);
 
 %rename(__libpd_openfile) libpd_openfile;
+%rename(__libpd_loadstring) libpd_loadstring;
 %rename(__libpd_closefile) libpd_closefile;
 %rename(__libpd_getdollarzero) libpd_getdollarzero;
 void *libpd_openfile(const char *, const char *);
+void *libpd_loadstring(const char *);
 void libpd_closefile(void *);
 int libpd_getdollarzero(void *);
 
@@ -119,6 +121,14 @@ def libpd_open_patch(patch, dir = '.'):
   ptr = __libpd_openfile(patch, dir)
   if not ptr:
     raise IOError("unable to open patch: %s/%s" % (dir, patch))
+  dz = __libpd_getdollarzero(ptr)
+  __libpd_patches[dz] = ptr
+  return dz
+
+def libpd_load_string(patch):
+  ptr = __libpd_loadstring(patch)
+  if not ptr:
+    raise IOError("unable to open patch with string")
   dz = __libpd_getdollarzero(ptr)
   __libpd_patches[dz] = ptr
   return dz
