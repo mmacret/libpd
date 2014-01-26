@@ -1494,7 +1494,7 @@ void binbuf_evalstring(char *patch)
     t_binbuf *b = binbuf_new();
     
     int dspstate = canvas_suspend_dsp();
-    glob_setfilename(0, gensym(""), gensym("."));
+    glob_setfilename(0, gensym("virtual.pd"), gensym("."));
     binbuf_text(b, patch, (long)strlen(patch));
     binbuf_eval(b, 0, 0, 0);
     glob_setfilename(0, &s_, &s_);

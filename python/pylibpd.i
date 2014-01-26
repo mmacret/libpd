@@ -132,9 +132,8 @@ def libpd_load_string(patch):
   __libpd_patches[0] = ptr
   return 1
 
-def libpd_close_patch(dz):
-  __libpd_closefile(__libpd_patches[dz])
-  del __libpd_patches[dz]
+def libpd_close_patch():
+  libpd_message('pd-virtual.pd', 'menuclose', 1)
 
 __libpd_subscriptions = {}
 
